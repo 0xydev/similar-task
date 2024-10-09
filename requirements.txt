@@ -1,0 +1,13 @@
+flask
+flask-cors
+transformers
+torch
+qdrant-client
+pandas
+matplotlib
+seaborn
+tqdm
+scikit-learn
+plotly
+umap-learn
+einops
