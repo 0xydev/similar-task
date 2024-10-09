@@ -142,7 +142,7 @@ class TaskAnalyzer:
         try:
             result = self.client.retrieve(
                 collection_name=self.collection_name,
-                ids=[str(task_id)]
+                ids=[task_id]
             )
             if result:
                 return {
