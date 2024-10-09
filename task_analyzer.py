@@ -70,9 +70,10 @@ class TaskAnalyzer:
             query_vector=query_vector,
             limit=limit
         )
-
+        
         keyword_results = self.client.search(
             collection_name=self.collection_name,
+            query_vector=query_vector,
             query_filter=models.Filter(
                 must=[
                     models.FieldCondition(
