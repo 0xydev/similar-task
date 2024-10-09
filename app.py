@@ -63,6 +63,7 @@ def search_similar_tasks():
     logger.info(f"Found {len(similar_tasks)} similar tasks")
     return jsonify(similar_tasks)
 
+@app.route('/hybrid_search', methods=['POST'])
 def hybrid_search():
     try:
         data = request.json
