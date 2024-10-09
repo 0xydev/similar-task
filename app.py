@@ -63,16 +63,27 @@ def search_similar_tasks():
     logger.info(f"Found {len(similar_tasks)} similar tasks")
     return jsonify(similar_tasks)
 
-@app.route('/hybrid_search', methods=['POST'])
 def hybrid_search():
-    data = request.json
-    query = data.get('query', '')
-    limit = data.get('limit', 10)
-    semantic_weight = data.get('semantic_weight', 0.5)
-    
-    results = analyzer.hybrid_search(query, limit=limit, semantic_weight=semantic_weight)
-    return jsonify(results)
-
+    try:
+        data = request.json
+        query = data.get('query', '')
+        limit = data.get('limit', 10)
+        semantic_weight = data.get('semantic_weight', 0.5)
+        
+        if not query:
+            return jsonify({"error": "Query is required"}), 400
+        
+        if not isinstance(limit, int) or limit <= 0:
+            return jsonify({"error": "Limit must be a positive integer"}), 400
+        
+        if not isinstance(semantic_weight, (int, float)) or not 0 <= semantic_weight <= 1:
+            return jsonify({"error": "Semantic weight must be a float between 0 and 1"}), 400
+        
+        results = analyzer.hybrid_search(query, limit=limit, semantic_weight=semantic_weight)
+        return jsonify(results)
+    except Exception as e:
+        logger.error(f"Error in hybrid search: {str(e)}", exc_info=True)
+        return jsonify({"error": "An unexpected error occurred"}), 500
 
 @app.route('/load_csv', methods=['POST'])
 def load_csv():

@@ -64,11 +64,16 @@ class TaskAnalyzer:
         return results
     
     def hybrid_search(self, query: str, limit: int = 10, semantic_weight: float = 0.5) -> List[Dict[str, Any]]:
-        semantic_results = self.semantic_search(query, limit=limit)
-        
-        keyword_results = self.client.scroll(
+        query_vector = self._get_embedding(query)
+        semantic_results = self.client.search(
             collection_name=self.collection_name,
-            filter=models.Filter(
+            query_vector=query_vector,
+            limit=limit
+        )
+
+        keyword_results = self.client.search(
+            collection_name=self.collection_name,
+            query_filter=models.Filter(
                 must=[
                     models.FieldCondition(
                         key="text",
@@ -77,16 +82,16 @@ class TaskAnalyzer:
                 ]
             ),
             limit=limit
-        )[0]
+        )
         
         combined_results = {}
         
         for result in semantic_results:
-            combined_results[result['id']] = {
-                'id': result['id'],
-                'subject': result['subject'],
-                'description': result['description'],
-                'score': result['similarity'] * semantic_weight
+            combined_results[result.id] = {
+                'id': result.id,
+                'subject': result.payload['subject'],
+                'description': result.payload['description'],
+                'score': result.score * semantic_weight
             }
         
         for result in keyword_results:
