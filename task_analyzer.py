@@ -140,9 +140,14 @@ class TaskAnalyzer:
 
     def get_task(self, task_id: str) -> Dict[str, Any] | None:
         try:
+            try:
+                formatted_id = int(task_id)
+            except ValueError:
+                formatted_id = task_id
+
             result = self.client.retrieve(
                 collection_name=self.collection_name,
-                ids=[task_id]
+                ids=[formatted_id]
             )
             if result:
                 return {
